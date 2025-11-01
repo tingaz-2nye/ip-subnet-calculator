@@ -1833,6 +1833,46 @@ export default function SubnetCalculatorDark() {
             </div>
           </>
         )}
+
+        {/* Footer / Credits */}
+        <div
+          className={`mt-8 pt-6 border-t ${
+            isDark ? "border-slate-700" : "border-gray-200"
+          } text-center`}
+        >
+          <p
+            className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}
+          >
+            Created by{" "}
+            <a
+              href="https://github.com/tingaz-2nye"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`font-medium hover:underline ${
+                isDark ? "text-gray-200" : "text-gray-800"
+              }`}
+            >
+              Tingaz-2nye
+            </a>
+          </p>
+          <p
+            className={`text-xs mt-1 ${
+              isDark ? "text-gray-500" : "text-gray-500"
+            }`}
+          >
+            Open source on{" "}
+            <a
+              href="https://github.com/tingaz-2nye/ip-subnet-calculator"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`hover:underline ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              GitHub
+            </a>
+          </p>
+        </div>
       </div>
 
       {/* Keyboard Shortcuts Modal */}
