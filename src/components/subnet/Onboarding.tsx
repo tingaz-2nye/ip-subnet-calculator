@@ -324,19 +324,20 @@ export const Onboarding = memo(function Onboarding({
                   {currentStep > 0 && (
                     <button
                       onClick={handlePrevious}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors ${
                         isDark
                           ? "bg-slate-700 hover:bg-slate-600 text-white"
                           : "bg-gray-200 hover:bg-gray-300 text-gray-700"
                       }`}
                     >
                       <ArrowLeftIcon className="w-4 h-4" />
-                      Previous
+                      <span className="hidden xs:inline">Previous</span>
+                      <span className="xs:hidden">Prev</span>
                     </button>
                   )}
                   <button
                     onClick={handleNext}
-                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors ${
+                    className={`flex items-center gap-1.5 px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors ${
                       isDark
                         ? "bg-blue-600 hover:bg-blue-700 text-white"
                         : "bg-blue-600 hover:bg-blue-700 text-white"
@@ -345,11 +346,13 @@ export const Onboarding = memo(function Onboarding({
                     {isLastStep ? (
                       <>
                         <CheckIcon className="w-4 h-4" />
-                        Get Started
+                        <span className="hidden xs:inline">Get Started</span>
+                        <span className="xs:hidden">Start</span>
                       </>
                     ) : (
                       <>
-                        Next
+                        <span className="hidden xs:inline">Next</span>
+                        <span className="xs:hidden">Next</span>
                         <ArrowRightIcon className="w-4 h-4" />
                       </>
                     )}
