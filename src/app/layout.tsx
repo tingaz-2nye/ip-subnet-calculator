@@ -28,8 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "IP Subnet Calculator",
-    description:
-      "Professional IP subnet calculator with CIDR notation support",
+    description: "Professional IP subnet calculator with CIDR notation support",
   },
 };
 
