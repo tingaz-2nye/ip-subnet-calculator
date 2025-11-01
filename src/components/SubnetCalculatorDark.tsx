@@ -956,9 +956,6 @@ export default function SubnetCalculatorDark() {
         {/* Results Section */}
         {result && (
           <>
-            {/* Network Diagram Visualization */}
-            <NetworkDiagram result={result} isDark={isDark} />
-
             {/* Summary Grid */}
             <div
               className={`${
@@ -1156,6 +1153,9 @@ export default function SubnetCalculatorDark() {
                 />
               </div>
             </div>
+
+            {/* Network Diagram Visualization */}
+            <NetworkDiagram result={result} isDark={isDark} />
 
             {/* Binary Representation */}
             <div
