@@ -1,0 +1,283 @@
+// IP subnet calculation utilities
+
+export interface SubnetRange {
+  subnetNumber: number;
+  networkAddress: string;
+  broadcastAddress: string;
+  firstUsableHost: string;
+  lastUsableHost: string;
+  usableHosts: number;
+}
+
+export interface SubnetInfo {
+  networkAddress: string;
+  broadcastAddress: string;
+  firstUsableHost: string;
+  lastUsableHost: string;
+  totalHosts: number;
+  usableHosts: number;
+  subnetMask: string;
+  subnetMaskBinary: string;
+  wildcardMask: string;
+  cidr: number;
+  ipClass: string;
+  ipClassDescription: string;
+  numberOfSubnets: number;
+  bitsUsedForSubnetting: number;
+  subnetRanges?: SubnetRange[];
+}
+
+export interface ValidationResult {
+  isValid: boolean;
+  error?: string;
+}
+
+export function validateIPAddress(ip: string): ValidationResult {
+  const ipRegex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+  const match = ip.match(ipRegex);
+
+  if (!match) {
+    return { isValid: false, error: "Invalid IP address format" };
+  }
+
+  const octets = match.slice(1, 5).map(Number);
+
+  for (const octet of octets) {
+    if (octet < 0 || octet > 255) {
+      return {
+        isValid: false,
+        error: "IP address octets must be between 0 and 255",
+      };
+    }
+  }
+
+  return { isValid: true };
+}
+
+export function validateCIDR(cidr: number): ValidationResult {
+  if (cidr < 0 || cidr > 32) {
+    return { isValid: false, error: "CIDR must be between 0 and 32" };
+  }
+  return { isValid: true };
+}
+
+export function getIPClass(ip: string): { class: string; description: string } {
+  const firstOctet = parseInt(ip.split(".")[0]);
+
+  if (firstOctet >= 1 && firstOctet <= 126) {
+    return {
+      class: "A",
+      description:
+        "Class A (1.0.0.0 - 126.255.255.255) - Large networks, /8 default",
+    };
+  } else if (firstOctet >= 128 && firstOctet <= 191) {
+    return {
+      class: "B",
+      description:
+        "Class B (128.0.0.0 - 191.255.255.255) - Medium networks, /16 default",
+    };
+  } else if (firstOctet >= 192 && firstOctet <= 223) {
+    return {
+      class: "C",
+      description:
+        "Class C (192.0.0.0 - 223.255.255.255) - Small networks, /24 default",
+    };
+  } else if (firstOctet >= 224 && firstOctet <= 239) {
+    return {
+      class: "D",
+      description:
+        "Class D (224.0.0.0 - 239.255.255.255) - Multicast addresses",
+    };
+  } else if (firstOctet >= 240 && firstOctet <= 255) {
+    return {
+      class: "E",
+      description:
+        "Class E (240.0.0.0 - 255.255.255.255) - Experimental/Reserved",
+    };
+  } else {
+    return {
+      class: "Invalid",
+      description: "Invalid IP address range",
+    };
+  }
+}
+
+export function ipToNumber(ip: string): number {
+  return (
+    ip.split(".").reduce((acc, octet) => (acc << 8) + parseInt(octet), 0) >>> 0
+  );
+}
+
+export function numberToIP(num: number): string {
+  return [
+    (num >>> 24) & 255,
+    (num >>> 16) & 255,
+    (num >>> 8) & 255,
+    num & 255,
+  ].join(".");
+}
+
+export function cidrToSubnetMask(cidr: number): string {
+  const mask = (0xffffffff << (32 - cidr)) >>> 0;
+  return numberToIP(mask);
+}
+
+export function subnetMaskToBinary(mask: string): string {
+  return mask
+    .split(".")
+    .map((octet) => parseInt(octet).toString(2).padStart(8, "0"))
+    .join(".");
+}
+
+export function calculateWildcardMask(subnetMask: string): string {
+  return subnetMask
+    .split(".")
+    .map((octet) => (255 - parseInt(octet)).toString())
+    .join(".");
+}
+
+export function getDefaultCIDRForClass(ipClass: string): number {
+  switch (ipClass) {
+    case "A":
+      return 8;
+    case "B":
+      return 16;
+    case "C":
+      return 24;
+    default:
+      return 24;
+  }
+}
+
+export function calculateSubnetRanges(
+  ip: string,
+  cidr: number,
+  maxRanges: number = 50
+): SubnetRange[] {
+  // Get the IP class to determine the default network
+  const { class: ipClass } = getIPClass(ip);
+  const defaultCIDR = getDefaultCIDRForClass(ipClass);
+
+  // Calculate the base network address
+  const ipNum = ipToNumber(ip);
+  const subnetMaskNum = ipToNumber(cidrToSubnetMask(cidr));
+  const networkNum = ipNum & subnetMaskNum;
+
+  // Calculate the parent network (using default class mask)
+  const parentMaskNum = ipToNumber(cidrToSubnetMask(defaultCIDR));
+  const parentNetworkNum = ipNum & parentMaskNum;
+
+  // Calculate subnet size and total subnets
+  const hostBits = 32 - cidr;
+  const subnetSize = Math.pow(2, hostBits);
+
+  // Total subnets in the parent network
+  const bitsUsedForSubnetting = cidr - defaultCIDR;
+  const totalSubnets =
+    bitsUsedForSubnetting > 0 ? Math.pow(2, bitsUsedForSubnetting) : 1;
+  const actualRanges = Math.min(totalSubnets, maxRanges);
+
+  const ranges: SubnetRange[] = [];
+
+  for (let i = 0; i < actualRanges; i++) {
+    const subnetNetworkNum = parentNetworkNum + i * subnetSize;
+    const subnetBroadcastNum = subnetNetworkNum + subnetSize - 1;
+
+    const networkAddress = numberToIP(subnetNetworkNum);
+    const broadcastAddress = numberToIP(subnetBroadcastNum);
+    const firstUsableHost =
+      hostBits > 1 ? numberToIP(subnetNetworkNum + 1) : networkAddress;
+    const lastUsableHost =
+      hostBits > 1 ? numberToIP(subnetBroadcastNum - 1) : networkAddress;
+    const usableHosts = hostBits > 1 ? subnetSize - 2 : hostBits === 1 ? 0 : 1;
+
+    ranges.push({
+      subnetNumber: i + 1,
+      networkAddress,
+      broadcastAddress,
+      firstUsableHost,
+      lastUsableHost,
+      usableHosts,
+    });
+  }
+
+  return ranges;
+}
+
+export function calculateSubnetInfo(
+  ip: string,
+  cidr: number,
+  includeRanges: boolean = false,
+  maxRanges: number = 50
+): SubnetInfo {
+  const ipValidation = validateIPAddress(ip);
+  if (!ipValidation.isValid) {
+    throw new Error(ipValidation.error);
+  }
+
+  const cidrValidation = validateCIDR(cidr);
+  if (!cidrValidation.isValid) {
+    throw new Error(cidrValidation.error);
+  }
+
+  const ipNum = ipToNumber(ip);
+  const subnetMask = cidrToSubnetMask(cidr);
+  const subnetMaskNum = ipToNumber(subnetMask);
+
+  // Calculate network address
+  const networkNum = ipNum & subnetMaskNum;
+  const networkAddress = numberToIP(networkNum);
+
+  // Calculate broadcast address
+  const hostBits = 32 - cidr;
+  const broadcastNum = networkNum | ((1 << hostBits) - 1);
+  const broadcastAddress = numberToIP(broadcastNum);
+
+  // Calculate usable host range
+  const firstUsableHost =
+    hostBits > 1 ? numberToIP(networkNum + 1) : networkAddress;
+  const lastUsableHost =
+    hostBits > 1 ? numberToIP(broadcastNum - 1) : networkAddress;
+
+  // Calculate host counts
+  const totalHosts = Math.pow(2, hostBits);
+  const usableHosts = hostBits > 1 ? totalHosts - 2 : hostBits === 1 ? 0 : 1;
+
+  // Get IP class information
+  const { class: ipClass, description: ipClassDescription } = getIPClass(ip);
+  const defaultCIDR = getDefaultCIDRForClass(ipClass);
+
+  // Calculate subnetting information
+  const bitsUsedForSubnetting = Math.max(0, cidr - defaultCIDR);
+  const numberOfSubnets =
+    bitsUsedForSubnetting > 0 ? Math.pow(2, bitsUsedForSubnetting) : 1;
+
+  // Calculate subnet ranges if requested
+  let subnetRanges: SubnetRange[] | undefined;
+  if (includeRanges) {
+    try {
+      subnetRanges = calculateSubnetRanges(ip, cidr, maxRanges);
+    } catch (error) {
+      // If error calculating ranges, continue without them
+      subnetRanges = undefined;
+    }
+  }
+
+  return {
+    networkAddress,
+    broadcastAddress,
+    firstUsableHost,
+    lastUsableHost,
+    totalHosts,
+    usableHosts,
+    subnetMask,
+    subnetMaskBinary: subnetMaskToBinary(subnetMask),
+    wildcardMask: calculateWildcardMask(subnetMask),
+    cidr,
+    ipClass,
+    ipClassDescription,
+    numberOfSubnets,
+    bitsUsedForSubnetting,
+    subnetRanges,
+  };
+}
