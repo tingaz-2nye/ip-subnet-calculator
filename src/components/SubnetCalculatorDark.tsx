@@ -23,6 +23,7 @@ import {
   KeyboardShortcutsModal,
   NetworkDiagram,
   Onboarding,
+  NumberSystemConverter,
   getIPClass,
   colorThemes,
   exportToCSV,
@@ -1881,6 +1882,9 @@ export default function SubnetCalculatorDark() {
         onClose={() => setShowShortcutsModal(false)}
         isDark={isDark}
       />
+
+      {/* Number System Converter */}
+      <NumberSystemConverter isDark={isDark} theme={theme} />
     </div>
   );
 }

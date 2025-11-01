@@ -11,6 +11,7 @@ export { IPClassBadge } from "./IPClassBadge";
 export { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
 export { NetworkDiagram } from "./NetworkDiagram";
 export { Onboarding } from "./Onboarding";
+export { NumberSystemConverter } from "./NumberSystemConverter";
 
 // Type exports
 export type {
