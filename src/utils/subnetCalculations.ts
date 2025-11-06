@@ -125,8 +125,39 @@ export function cidrToSubnetMask(cidr: number): string {
 export function subnetMaskToBinary(mask: string): string {
   return mask
     .split(".")
-    .map((octet) => parseInt(octet).toString(2).padStart(8, "0"))
+    .map((octet) => decimalToBinarySubtraction(parseInt(octet)))
     .join(".");
+}
+
+/**
+ * Convert decimal to binary using the subtraction method
+ * For example: 200 = 128 + 64 + 8 = 11001000
+ * 1. Start with 200
+ * 2. Subtract 128 (2^7) → remainder 72, bit 7 = 1
+ * 3. Subtract 64 (2^6) from 72 → remainder 8, bit 6 = 1
+ * 4. Can't subtract 32 (2^5) from 8 → bit 5 = 0
+ * 5. Can't subtract 16 (2^4) from 8 → bit 4 = 0
+ * 6. Can't subtract 8 (2^3) from 8 → but 8 - 8 = 0, bit 3 = 1
+ * 7. Remaining bits = 0
+ * Result: 11001000
+ */
+function decimalToBinarySubtraction(decimal: number): string {
+  const bits: string[] = [];
+  let remainder = decimal;
+
+  // Powers of 2 from 2^7 (128) down to 2^0 (1) for 8-bit binary
+  const powers = [128, 64, 32, 16, 8, 4, 2, 1];
+
+  for (const power of powers) {
+    if (remainder >= power) {
+      bits.push("1"); // Turn ON this bit
+      remainder -= power; // Subtract the power
+    } else {
+      bits.push("0"); // Turn OFF this bit
+    }
+  }
+
+  return bits.join("");
 }
 
 export function calculateWildcardMask(subnetMask: string): string {
