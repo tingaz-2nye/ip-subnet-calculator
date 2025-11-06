@@ -1148,6 +1148,43 @@ export default function SubnetCalculatorDark() {
                     <option value={50}>50 per page</option>
                     <option value={100}>100 per page</option>
                   </select>
+
+                  {/* Show All Subnets Toggle */}
+                  {result.numberOfSubnets && result.numberOfSubnets > 100 && (
+                    <button
+                      onClick={() => {
+                        setShowAllRanges(!showAllRanges);
+                        // Recalculate with new limit
+                        const [ipAddress, cidrString] = ipInput.split("/");
+                        const cidr = parseInt(cidrString);
+                        const newResult = calculateSubnetInfo(
+                          ipAddress,
+                          cidr,
+                          true,
+                          !showAllRanges ? 100000 : 100
+                        );
+                        setResult(newResult);
+                      }}
+                      className={`text-sm px-3 py-2 rounded font-medium transition-all whitespace-nowrap ${
+                        showAllRanges
+                          ? isDark
+                            ? theme.primary + " text-white"
+                            : "bg-blue-500 text-white"
+                          : isDark
+                          ? "bg-slate-700 hover:bg-slate-600 text-gray-300"
+                          : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                      }`}
+                      title={
+                        showAllRanges
+                          ? `Showing all ${result.numberOfSubnets} subnets`
+                          : `Showing 100 of ${result.numberOfSubnets} subnets. Click to show all.`
+                      }
+                    >
+                      {showAllRanges
+                        ? `All ${result.numberOfSubnets?.toLocaleString()} Subnets`
+                        : "Show All Subnets"}
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="overflow-x-auto">
