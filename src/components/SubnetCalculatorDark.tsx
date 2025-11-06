@@ -1151,39 +1151,90 @@ export default function SubnetCalculatorDark() {
 
                   {/* Show All Subnets Toggle */}
                   {result.numberOfSubnets && result.numberOfSubnets > 100 && (
-                    <button
-                      onClick={() => {
-                        setShowAllRanges(!showAllRanges);
-                        // Recalculate with new limit
-                        const [ipAddress, cidrString] = ipInput.split("/");
-                        const cidr = parseInt(cidrString);
-                        const newResult = calculateSubnetInfo(
-                          ipAddress,
-                          cidr,
-                          true,
-                          !showAllRanges ? 100000 : 100
-                        );
-                        setResult(newResult);
-                      }}
-                      className={`text-sm px-3 py-2 rounded font-medium transition-all whitespace-nowrap ${
-                        showAllRanges
-                          ? isDark
-                            ? theme.primary + " text-white"
-                            : "bg-blue-500 text-white"
-                          : isDark
-                          ? "bg-slate-700 hover:bg-slate-600 text-gray-300"
-                          : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                      }`}
-                      title={
-                        showAllRanges
-                          ? `Showing all ${result.numberOfSubnets} subnets`
-                          : `Showing 100 of ${result.numberOfSubnets} subnets. Click to show all.`
-                      }
-                    >
-                      {showAllRanges
-                        ? `All ${result.numberOfSubnets?.toLocaleString()} Subnets`
-                        : "Show All Subnets"}
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={async () => {
+                          setIsCalculating(true);
+                          setShowAllRanges(!showAllRanges);
+
+                          // Use setTimeout to allow UI to update with loading state
+                          setTimeout(() => {
+                            try {
+                              const [ipAddress, cidrString] =
+                                ipInput.split("/");
+                              const cidr = parseInt(cidrString);
+                              const newResult = calculateSubnetInfo(
+                                ipAddress,
+                                cidr,
+                                true,
+                                !showAllRanges ? 100000 : 100
+                              );
+                              setResult(newResult);
+                            } finally {
+                              setIsCalculating(false);
+                            }
+                          }, 50);
+                        }}
+                        disabled={isCalculating}
+                        className={`text-sm px-3 py-2 rounded font-medium transition-all whitespace-nowrap flex items-center gap-2 ${
+                          isCalculating ? "opacity-50 cursor-not-allowed" : ""
+                        } ${
+                          showAllRanges
+                            ? isDark
+                              ? theme.primary + " text-white"
+                              : "bg-blue-500 text-white"
+                            : isDark
+                            ? "bg-slate-700 hover:bg-slate-600 text-gray-300"
+                            : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                        }`}
+                        title={
+                          showAllRanges
+                            ? `Showing all ${result.numberOfSubnets} subnets`
+                            : `Showing 100 of ${result.numberOfSubnets} subnets. Click to show all.`
+                        }
+                      >
+                        {isCalculating && (
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                        )}
+                        {showAllRanges
+                          ? `All ${result.numberOfSubnets?.toLocaleString()} Subnets`
+                          : "Show All Subnets"}
+                      </button>
+
+                      {/* Performance Warning */}
+                      {result.numberOfSubnets > 10000 && !showAllRanges && (
+                        <div
+                          className={`text-xs px-3 py-1.5 rounded ${
+                            isDark
+                              ? "bg-yellow-900/30 text-yellow-400 border border-yellow-700/50"
+                              : "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                          }`}
+                        >
+                          ⚡ Large network (
+                          {result.numberOfSubnets.toLocaleString()} subnets).
+                          Showing all may take a moment.
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

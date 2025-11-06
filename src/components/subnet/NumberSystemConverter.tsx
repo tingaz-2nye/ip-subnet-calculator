@@ -66,6 +66,13 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
   const [conversionMethod, setConversionMethod] = useState<
     "subtraction" | "division"
   >("subtraction");
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const handleCopy = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   const validateInput = (value: string, system: NumberSystem): boolean => {
     if (!value) return false;
@@ -751,7 +758,7 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
                             {Object.entries(result).map(([system, value]) => (
                               <div
                                 key={system}
-                                className={`flex justify-between items-center p-3 rounded ${
+                                className={`flex justify-between items-center p-3 rounded group ${
                                   isDark ? "bg-slate-900" : "bg-white"
                                 }`}
                               >
@@ -763,16 +770,65 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
                                   {system.charAt(0).toUpperCase() +
                                     system.slice(1)}
                                 </span>
-                                <span
-                                  className={`font-mono text-lg ${
-                                    isDark ? theme.value : theme.valueLight
-                                  }`}
-                                >
-                                  {system === "hexadecimal" ? "0x" : ""}
-                                  {system === "octal" ? "0o" : ""}
-                                  {system === "binary" ? "0b" : ""}
-                                  {value}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span
+                                    className={`font-mono text-lg ${
+                                      isDark ? theme.value : theme.valueLight
+                                    }`}
+                                  >
+                                    {system === "hexadecimal" ? "0x" : ""}
+                                    {system === "octal" ? "0o" : ""}
+                                    {system === "binary" ? "0b" : ""}
+                                    {value}
+                                  </span>
+                                  <button
+                                    onClick={() => handleCopy(value, system)}
+                                    className={`opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded ${
+                                      copiedField === system
+                                        ? isDark
+                                          ? "bg-green-600 text-white"
+                                          : "bg-green-500 text-white"
+                                        : isDark
+                                        ? "hover:bg-slate-700 text-gray-400"
+                                        : "hover:bg-gray-100 text-gray-500"
+                                    }`}
+                                    title={
+                                      copiedField === system
+                                        ? "Copied!"
+                                        : "Copy value"
+                                    }
+                                  >
+                                    {copiedField === system ? (
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M5 13l4 4L19 7"
+                                        />
+                                      </svg>
+                                    ) : (
+                                      <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                        />
+                                      </svg>
+                                    )}
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>

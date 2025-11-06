@@ -1,5 +1,9 @@
 // IP subnet calculation utilities
 
+// Cache for calculation results
+const calculationCache = new Map<string, SubnetInfo>();
+const MAX_CACHE_SIZE = 50; // Keep last 50 calculations
+
 export interface SubnetRange {
   subnetNumber: number;
   networkAddress: string;
@@ -30,6 +34,26 @@ export interface SubnetInfo {
 export interface ValidationResult {
   isValid: boolean;
   error?: string;
+}
+
+// Helper function to generate cache key
+function getCacheKey(
+  ip: string,
+  cidr: number,
+  includeRanges: boolean,
+  maxRanges: number
+): string {
+  return `${ip}/${cidr}|${includeRanges}|${maxRanges}`;
+}
+
+// Helper function to manage cache size
+function manageCacheSize(): void {
+  if (calculationCache.size > MAX_CACHE_SIZE) {
+    const firstKey = calculationCache.keys().next().value;
+    if (firstKey) {
+      calculationCache.delete(firstKey);
+    }
+  }
 }
 
 export function validateIPAddress(ip: string): ValidationResult {
@@ -267,6 +291,16 @@ export function calculateSubnetInfo(
   includeRanges: boolean = false,
   maxRanges: number = 50
 ): SubnetInfo {
+  // Check cache first
+  const cacheKey = getCacheKey(ip, cidr, includeRanges, maxRanges);
+  const cachedResult = calculationCache.get(cacheKey);
+  if (cachedResult) {
+    console.log("✅ Cache hit for:", cacheKey);
+    return cachedResult;
+  }
+
+  console.log("🔄 Computing for:", cacheKey);
+
   const ipValidation = validateIPAddress(ip);
   if (!ipValidation.isValid) {
     throw new Error(ipValidation.error);
@@ -320,7 +354,7 @@ export function calculateSubnetInfo(
     }
   }
 
-  return {
+  const result: SubnetInfo = {
     networkAddress,
     broadcastAddress,
     firstUsableHost,
@@ -337,4 +371,16 @@ export function calculateSubnetInfo(
     bitsUsedForSubnetting,
     subnetRanges,
   };
+
+  // Cache the result
+  manageCacheSize();
+  calculationCache.set(cacheKey, result);
+
+  return result;
+}
+
+// Export function to clear cache if needed
+export function clearCalculationCache(): void {
+  calculationCache.clear();
+  console.log("🗑️ Calculation cache cleared");
 }
