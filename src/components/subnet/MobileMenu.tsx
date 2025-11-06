@@ -80,8 +80,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               <div
                 className={`rounded-t-2xl shadow-2xl p-6 ${
                   isDark
-                    ? "bg-gradient-to-br from-slate-900 to-slate-800"
-                    : "bg-gradient-to-br from-white to-gray-50"
+                    ? "bg-linear-to-br from-slate-900 to-slate-800"
+                    : "bg-linear-to-br from-white to-gray-50"
                 }`}
               >
                 {/* Header */}
