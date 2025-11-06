@@ -13,6 +13,8 @@ export { NetworkDiagram } from "./NetworkDiagram";
 export { Onboarding } from "./Onboarding";
 export { NumberSystemConverter } from "./NumberSystemConverter";
 export { MobileMenu } from "./MobileMenu";
+export { default as QuickSubnetLookup } from "./QuickSubnetLookup";
+export { default as InputSection } from "./InputSection";
 
 // Type exports
 export type {
