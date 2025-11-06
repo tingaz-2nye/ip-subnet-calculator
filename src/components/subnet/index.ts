@@ -12,6 +12,7 @@ export { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
 export { NetworkDiagram } from "./NetworkDiagram";
 export { Onboarding } from "./Onboarding";
 export { NumberSystemConverter } from "./NumberSystemConverter";
+export { MobileMenu } from "./MobileMenu";
 
 // Type exports
 export type {

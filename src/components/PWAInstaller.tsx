@@ -66,28 +66,32 @@ export const PWAInstaller = () => {
   if (!showInstallPrompt) return null;
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-2xl p-4 flex items-center gap-3 max-w-md">
-        <ArrowDownTrayIcon className="w-6 h-6 flex-shrink-0" />
-        <div className="flex-1">
-          <p className="font-semibold text-sm">Install IP Calculator</p>
-          <p className="text-xs opacity-90">
+    <div className="fixed top-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 animate-in slide-in-from-top duration-300">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:max-w-md">
+        <ArrowDownTrayIcon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 hidden sm:block" />
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm sm:text-base">
+            Install IP Calculator
+          </p>
+          <p className="text-xs opacity-90 line-clamp-2">
             Install for offline access and quick launch
           </p>
         </div>
-        <button
-          onClick={handleInstallClick}
-          className="px-4 py-2 bg-white text-blue-600 rounded-lg font-medium text-sm hover:bg-gray-100 transition-colors flex-shrink-0"
-        >
-          Install
-        </button>
-        <button
-          onClick={() => setShowInstallPrompt(false)}
-          className="p-1 hover:bg-white/20 rounded transition-colors flex-shrink-0"
-          aria-label="Dismiss"
-        >
-          <XMarkIcon className="w-5 h-5" />
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={handleInstallClick}
+            className="flex-1 sm:flex-none px-4 py-2 bg-white text-blue-600 rounded-lg font-medium text-sm hover:bg-gray-100 transition-colors shrink-0"
+          >
+            Install
+          </button>
+          <button
+            onClick={() => setShowInstallPrompt(false)}
+            className="p-2 hover:bg-white/20 rounded transition-colors shrink-0"
+            aria-label="Dismiss"
+          >
+            <XMarkIcon className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
   );

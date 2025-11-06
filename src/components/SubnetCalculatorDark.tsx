@@ -24,6 +24,7 @@ import {
   NetworkDiagram,
   Onboarding,
   NumberSystemConverter,
+  MobileMenu,
   getIPClass,
   colorThemes,
   exportToCSV,
@@ -472,8 +473,8 @@ export default function SubnetCalculatorDark() {
         <Onboarding isDark={isDark} onComplete={handleOnboardingComplete} />
       )}
 
-      {/* Theme Controls */}
-      <div data-tour="theme-controls">
+      {/* Theme Controls - Hidden on mobile, visible on desktop */}
+      <div data-tour="theme-controls" className="hidden lg:block">
         <ThemeToggle
           themeMode={themeMode}
           onToggle={() => setThemeMode(isDark ? "light" : "dark")}
@@ -492,10 +493,10 @@ export default function SubnetCalculatorDark() {
         />
       </div>
 
-      {/* History Button */}
+      {/* History Button - Hidden on mobile, visible on desktop */}
       <button
         onClick={() => setShowHistoryPanel(!showHistoryPanel)}
-        className={`fixed top-4 sm:top-6 left-4 sm:left-6 z-50 p-3 sm:p-4 rounded-full transition-all shadow-xl hover:shadow-2xl border-2 transform hover:scale-110 ${
+        className={`hidden lg:flex fixed top-4 sm:top-6 left-4 sm:left-6 z-50 p-3 sm:p-4 rounded-full transition-all shadow-xl hover:shadow-2xl border-2 transform hover:scale-110 ${
           isDark
             ? "bg-slate-800 hover:bg-slate-700 text-cyan-400 border-cyan-400/30 hover:border-cyan-400/50"
             : "bg-white hover:bg-gray-50 text-cyan-600 border-cyan-400/40 hover:border-cyan-500/60"
@@ -1885,6 +1886,17 @@ export default function SubnetCalculatorDark() {
 
       {/* Number System Converter */}
       <NumberSystemConverter isDark={isDark} theme={theme} />
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        isDark={isDark}
+        themeMode={themeMode}
+        colorTheme={colorTheme}
+        theme={theme}
+        onThemeModeChange={setThemeMode}
+        onColorThemeChange={setColorTheme}
+        onHistoryClick={() => setShowHistoryPanel(!showHistoryPanel)}
+      />
     </div>
   );
 }
