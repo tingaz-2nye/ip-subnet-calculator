@@ -12,6 +12,9 @@ import {
   CommandLineIcon,
   PaintBrushIcon,
   RocketLaunchIcon,
+  MagnifyingGlassIcon,
+  AcademicCapIcon,
+  TableCellsIcon,
 } from "@heroicons/react/24/outline";
 
 interface OnboardingProps {
@@ -66,6 +69,30 @@ const steps: Step[] = [
     ],
   },
   {
+    title: "View All Subnets",
+    description:
+      "When your network has more than 100 subnets, use the 'Show All Subnets' button to display them all!",
+    icon: TableCellsIcon,
+    tips: [
+      "By default, only 100 subnets are shown for performance",
+      "Click 'Show All Subnets' to see all available subnets",
+      "Works great for networks with thousands of subnets",
+      "Button appears automatically when needed",
+    ],
+  },
+  {
+    title: "Quick Subnet Lookup",
+    description:
+      "Need to find a specific subnet? Use Quick Subnet Lookup to jump directly to any subnet number!",
+    icon: MagnifyingGlassIcon,
+    tips: [
+      "Enter a subnet number (e.g., 1023) to find it instantly",
+      "Shows network address, broadcast, and usable host range",
+      "Perfect for large networks with many subnets",
+      "Located above the subnet details table",
+    ],
+  },
+  {
     title: "Calculation History",
     description:
       "Your calculations are automatically saved. Click the history button to view past calculations.",
@@ -76,6 +103,19 @@ const steps: Step[] = [
       "Click any history item to restore it",
       "Remove individual items or clear all",
       "History persists across browser sessions",
+    ],
+  },
+  {
+    title: "Number System Converter",
+    description:
+      "Learn binary conversions with our interactive converter! Choose between Subtraction or Division methods.",
+    icon: AcademicCapIcon,
+    tips: [
+      "Click the floating ⇄ button (bottom-right) to open",
+      "Subtraction Method: Check powers of 2 (best for learning)",
+      "Division Method: Divide by 2 repeatedly (best for algorithms)",
+      "Shows step-by-step explanations with visual tutorials",
+      "Includes quick reference table and 8-bit position values",
     ],
   },
   {
