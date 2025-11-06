@@ -27,6 +27,7 @@ import {
   MobileMenu,
   QuickSubnetLookup,
   InputSection,
+  PaginationButton,
   getIPClass,
   colorThemes,
   exportToCSV,
@@ -613,30 +614,22 @@ export default function SubnetCalculatorDark() {
                 Network Summary
               </h2>
               <div className="flex flex-col sm:flex-row gap-2 mb-4">
-                <button
+                <PaginationButton
                   onClick={handleExportCSV}
-                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded text-sm font-medium transition-colors ${
-                    isDark
-                      ? "bg-slate-700 hover:bg-slate-600 text-gray-300"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  }`}
+                  isDark={isDark}
+                  icon={<DocumentArrowDownIcon className="w-4 h-4" />}
                   aria-label="Export as CSV"
                 >
-                  <DocumentArrowDownIcon className="w-4 h-4" />
                   Export CSV
-                </button>
-                <button
+                </PaginationButton>
+                <PaginationButton
                   onClick={handleExportJSON}
-                  className={`flex items-center justify-center gap-2 px-4 py-2 rounded text-sm font-medium transition-colors ${
-                    isDark
-                      ? "bg-slate-700 hover:bg-slate-600 text-gray-300"
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                  }`}
+                  isDark={isDark}
+                  icon={<DocumentArrowDownIcon className="w-4 h-4" />}
                   aria-label="Export as JSON"
                 >
-                  <DocumentArrowDownIcon className="w-4 h-4" />
                   Export JSON
-                </button>
+                </PaginationButton>
                 <button
                   onClick={handleShareURL}
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded text-sm font-medium transition-colors ${
@@ -1329,28 +1322,20 @@ export default function SubnetCalculatorDark() {
                     })()}
                   </div>
                   <div className="flex flex-wrap gap-2 justify-center">
-                    <button
+                    <PaginationButton
                       onClick={() => setCurrentPage(1)}
                       disabled={currentPage === 1}
-                      className={`px-3 py-1 ${
-                        isDark
-                          ? "bg-slate-700 hover:bg-slate-600"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      } rounded disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
+                      isDark={isDark}
                     >
                       First
-                    </button>
-                    <button
+                    </PaginationButton>
+                    <PaginationButton
                       onClick={() => setCurrentPage(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className={`px-3 py-1 ${
-                        isDark
-                          ? "bg-slate-700 hover:bg-slate-600"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      } rounded disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
+                      isDark={isDark}
                     >
                       Previous
-                    </button>
+                    </PaginationButton>
                     <div
                       className={`flex items-center px-3 text-sm ${
                         isDark ? "text-gray-300" : "text-gray-700"
@@ -1512,7 +1497,7 @@ export default function SubnetCalculatorDark() {
                       </button>
                     </div>
 
-                    <button
+                    <PaginationButton
                       onClick={() => setCurrentPage(currentPage + 1)}
                       disabled={(() => {
                         const filteredCount =
@@ -1540,15 +1525,11 @@ export default function SubnetCalculatorDark() {
                           currentPage >= Math.ceil(filteredCount / itemsPerPage)
                         );
                       })()}
-                      className={`px-3 py-1 ${
-                        isDark
-                          ? "bg-slate-700 hover:bg-slate-600"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      } rounded disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
+                      isDark={isDark}
                     >
                       Next
-                    </button>
-                    <button
+                    </PaginationButton>
+                    <PaginationButton
                       onClick={() => {
                         const filteredCount =
                           result.subnetRanges?.filter((subnet) => {
@@ -1598,14 +1579,10 @@ export default function SubnetCalculatorDark() {
                           currentPage >= Math.ceil(filteredCount / itemsPerPage)
                         );
                       })()}
-                      className={`px-3 py-1 ${
-                        isDark
-                          ? "bg-slate-700 hover:bg-slate-600"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      } rounded disabled:opacity-50 disabled:cursor-not-allowed text-sm`}
+                      isDark={isDark}
                     >
                       Last
-                    </button>
+                    </PaginationButton>
                   </div>
                 </div>
               )}
