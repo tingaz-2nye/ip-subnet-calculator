@@ -148,7 +148,41 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
         break;
 
       case "decimal":
-        steps.push(`Decimal to Binary (Division Method):`);
+        // Subtraction Method
+        steps.push(`Decimal to Binary (Subtraction Method):`);
+        steps.push(`Start with ${decimalValue}`);
+
+        const powers = [128, 64, 32, 16, 8, 4, 2, 1];
+        const usedPowers: number[] = [];
+        let remainder = decimalValue;
+        let binaryResult = "";
+
+        for (const power of powers) {
+          if (remainder >= power) {
+            usedPowers.push(power);
+            steps.push(
+              `${remainder} ≥ ${power}? YES → Turn ON bit (1), remainder: ${
+                remainder - power
+              }`
+            );
+            binaryResult += "1";
+            remainder -= power;
+          } else {
+            steps.push(`${remainder} ≥ ${power}? NO → Turn OFF bit (0)`);
+            binaryResult += "0";
+          }
+        }
+
+        steps.push(``);
+        steps.push(
+          `Result: ${decimalValue} = ${usedPowers.join(
+            " + "
+          )} = ${binaryResult}`
+        );
+        steps.push(``);
+
+        // Also show division method
+        steps.push(`Alternative: Division Method`);
         steps.push(`Divide ${decimalValue} by 2 repeatedly:`);
         let num = decimalValue;
         const divisions: string[] = [];
@@ -199,8 +233,8 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
         onClick={() => setIsOpen(true)}
         className={`fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all hover:scale-105 ${
           isDark
-            ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-            : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+            ? "bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+            : "bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
         }`}
         aria-label="Open number system converter"
       >

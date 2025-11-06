@@ -1,11 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  calculateSubnetInfo,
-  SubnetInfo,
-  getDecimalToBinaryBreakdown,
-} from "@/utils/subnetCalculations";
+import { calculateSubnetInfo, SubnetInfo } from "@/utils/subnetCalculations";
 import {
   DocumentArrowDownIcon,
   MagnifyingGlassIcon,
@@ -906,104 +902,6 @@ export default function SubnetCalculatorDark() {
                         </div>
                       );
                     })}
-                  </div>
-                </div>
-
-                {/* Subtraction Method Breakdown */}
-                <div className="mt-6">
-                  <div
-                    className={`text-xs sm:text-sm font-bold mb-3 flex items-center gap-2 ${
-                      isDark ? "text-blue-400" : "text-blue-600"
-                    }`}
-                  >
-                    <AcademicCapIcon className="w-5 h-5" />
-                    Subtraction Method - How Binary Conversion Works
-                  </div>
-                  <div className="space-y-3">
-                    {result.subnetMask.split(".").map((octet, idx) => {
-                      const decimal = parseInt(octet);
-                      const breakdown = getDecimalToBinaryBreakdown(decimal);
-                      return (
-                        <div
-                          key={idx}
-                          className={`p-3 rounded-lg ${
-                            isDark
-                              ? "bg-slate-700/50 border border-slate-600"
-                              : "bg-white/80 border border-gray-200"
-                          }`}
-                        >
-                          <div
-                            className={`text-xs font-medium mb-2 ${
-                              isDark ? "text-gray-300" : "text-gray-700"
-                            }`}
-                          >
-                            Octet {idx + 1}: {decimal}
-                          </div>
-                          <div
-                            className={`font-mono text-xs ${
-                              isDark ? "text-gray-200" : "text-gray-800"
-                            }`}
-                          >
-                            {breakdown.powers.length > 0 ? (
-                              <>
-                                <span className="font-semibold">{decimal}</span>
-                                {" = "}
-                                <span
-                                  className={
-                                    isDark ? "text-green-400" : "text-green-600"
-                                  }
-                                >
-                                  {breakdown.sum}
-                                </span>
-                                {" = "}
-                                <span
-                                  className={
-                                    isDark ? "text-blue-400" : "text-blue-600"
-                                  }
-                                >
-                                  {breakdown.binary}
-                                </span>
-                                <div
-                                  className={`text-[10px] mt-1 ${
-                                    isDark ? "text-gray-400" : "text-gray-600"
-                                  }`}
-                                >
-                                  (Powers of 2: {breakdown.powers.join(" + ")})
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <span className="font-semibold">0</span>
-                                {" = "}
-                                <span
-                                  className={
-                                    isDark ? "text-blue-400" : "text-blue-600"
-                                  }
-                                >
-                                  00000000
-                                </span>
-                                <div
-                                  className={`text-[10px] mt-1 ${
-                                    isDark ? "text-gray-400" : "text-gray-600"
-                                  }`}
-                                >
-                                  (No powers of 2 needed)
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div
-                    className={`mt-3 text-xs italic ${
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    💡 The subtraction method: Start with the decimal number,
-                    subtract the largest power of 2 that fits (turn that bit
-                    ON), repeat with the remainder until you reach 0.
                   </div>
                 </div>
 
