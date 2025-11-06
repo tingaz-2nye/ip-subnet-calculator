@@ -160,6 +160,32 @@ function decimalToBinarySubtraction(decimal: number): string {
   return bits.join("");
 }
 
+/**
+ * Get the subtraction method breakdown for displaying in UI
+ * Returns the powers that were used (turned ON bits)
+ */
+export function getDecimalToBinaryBreakdown(decimal: number): {
+  powers: number[];
+  sum: string;
+  binary: string;
+} {
+  const powers: number[] = [];
+  let remainder = decimal;
+  const allPowers = [128, 64, 32, 16, 8, 4, 2, 1];
+
+  for (const power of allPowers) {
+    if (remainder >= power) {
+      powers.push(power);
+      remainder -= power;
+    }
+  }
+
+  const sum = powers.length > 0 ? powers.join(" + ") : "0";
+  const binary = decimalToBinarySubtraction(decimal);
+
+  return { powers, sum, binary };
+}
+
 export function calculateWildcardMask(subnetMask: string): string {
   return subnetMask
     .split(".")
