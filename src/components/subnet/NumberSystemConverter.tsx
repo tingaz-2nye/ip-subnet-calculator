@@ -63,6 +63,9 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [error, setError] = useState("");
   const [showSteps, setShowSteps] = useState(false);
+  const [conversionMethod, setConversionMethod] = useState<
+    "subtraction" | "division"
+  >("subtraction");
 
   const validateInput = (value: string, system: NumberSystem): boolean => {
     if (!value) return false;
@@ -148,53 +151,117 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
         break;
 
       case "decimal":
-        // Subtraction Method
-        steps.push(`Decimal to Binary (Subtraction Method):`);
-        steps.push(`Start with ${decimalValue}`);
+        if (conversionMethod === "subtraction") {
+          // Subtraction Method
+          steps.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+          steps.push(`📊 SUBTRACTION METHOD (Place Value Method)`);
+          steps.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+          steps.push(``);
+          steps.push(`Converting ${decimalValue} to Binary`);
+          steps.push(``);
+          steps.push(
+            `💡 Concept: Check each power of 2 (from largest to smallest).`
+          );
+          steps.push(
+            `   If the number is ≥ that power, turn the bit ON (1) and subtract.`
+          );
+          steps.push(`   Otherwise, turn the bit OFF (0).`);
+          steps.push(``);
 
-        const powers = [128, 64, 32, 16, 8, 4, 2, 1];
-        const usedPowers: number[] = [];
-        let remainder = decimalValue;
-        let binaryResult = "";
+          const powers = [128, 64, 32, 16, 8, 4, 2, 1];
+          const usedPowers: number[] = [];
+          let remainder = decimalValue;
+          let binaryResult = "";
 
-        for (const power of powers) {
-          if (remainder >= power) {
-            usedPowers.push(power);
+          steps.push(`Starting value: ${decimalValue}`);
+          steps.push(`Powers of 2: [128, 64, 32, 16, 8, 4, 2, 1]`);
+          steps.push(``);
+          steps.push(`Step-by-step process:`);
+          steps.push(`─────────────────────────────────────────────────────`);
+
+          for (let i = 0; i < powers.length; i++) {
+            const power = powers[i];
+            if (remainder >= power) {
+              usedPowers.push(power);
+              steps.push(
+                `Step ${i + 1}: ${remainder} ≥ ${power}? ✓ YES → Bit ${
+                  7 - i
+                } = 1 | Subtract ${power} → Remainder: ${remainder - power}`
+              );
+              binaryResult += "1";
+              remainder -= power;
+            } else {
+              steps.push(
+                `Step ${i + 1}: ${remainder} ≥ ${power}? ✗ NO  → Bit ${
+                  7 - i
+                } = 0 | Keep remainder: ${remainder}`
+              );
+              binaryResult += "0";
+            }
+          }
+
+          steps.push(`─────────────────────────────────────────────────────`);
+          steps.push(``);
+          steps.push(`✅ FINAL RESULT:`);
+          steps.push(
+            `   ${decimalValue} = ${
+              usedPowers.length > 0 ? usedPowers.join(" + ") : "0"
+            }`
+          );
+          steps.push(`   Binary: ${binaryResult}`);
+          steps.push(``);
+          steps.push(
+            `💡 Why this works: We're finding which powers of 2 add up to ${decimalValue}`
+          );
+        } else {
+          // Division Method
+          steps.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+          steps.push(`📊 DIVISION METHOD (Repeated Division by 2)`);
+          steps.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+          steps.push(``);
+          steps.push(`Converting ${decimalValue} to Binary`);
+          steps.push(``);
+          steps.push(`💡 Concept: Repeatedly divide by 2, track remainders.`);
+          steps.push(
+            `   The remainders (read bottom-to-top) form the binary number.`
+          );
+          steps.push(``);
+
+          let num = decimalValue;
+          const divisions: { quotient: number; remainder: number }[] = [];
+
+          steps.push(`Step-by-step division:`);
+          steps.push(`─────────────────────────────────────────────────────`);
+
+          let stepNum = 1;
+          while (num > 0) {
+            const quotient = Math.floor(num / 2);
+            const remainder = num % 2;
+            divisions.push({ quotient, remainder });
             steps.push(
-              `${remainder} ≥ ${power}? YES → Turn ON bit (1), remainder: ${
-                remainder - power
+              `Step ${stepNum}: ${num} ÷ 2 = ${quotient} remainder ${remainder} ${
+                remainder === 1 ? "← bit is 1" : "← bit is 0"
               }`
             );
-            binaryResult += "1";
-            remainder -= power;
-          } else {
-            steps.push(`${remainder} ≥ ${power}? NO → Turn OFF bit (0)`);
-            binaryResult += "0";
+            num = quotient;
+            stepNum++;
           }
-        }
 
-        steps.push(``);
-        steps.push(
-          `Result: ${decimalValue} = ${usedPowers.join(
-            " + "
-          )} = ${binaryResult}`
-        );
-        steps.push(``);
-
-        // Also show division method
-        steps.push(`Alternative: Division Method`);
-        steps.push(`Divide ${decimalValue} by 2 repeatedly:`);
-        let num = decimalValue;
-        const divisions: string[] = [];
-        while (num > 0) {
-          const remainder = num % 2;
-          divisions.push(
-            `${num} ÷ 2 = ${Math.floor(num / 2)}, remainder ${remainder}`
+          steps.push(`─────────────────────────────────────────────────────`);
+          steps.push(``);
+          steps.push(`✅ FINAL RESULT:`);
+          steps.push(
+            `   Remainders (bottom to top): ${divisions
+              .map((d) => d.remainder)
+              .reverse()
+              .join("")}`
           );
-          num = Math.floor(num / 2);
+          steps.push(`   Binary: ${result.binary}`);
+          steps.push(``);
+          steps.push(
+            `💡 Why this works: Each division by 2 reveals one binary digit (bit)`
+          );
         }
-        steps.push(...divisions);
-        steps.push(`Read remainders from bottom to top: ${result.binary}`);
         break;
 
       case "hexadecimal":
@@ -459,14 +526,106 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
                               </div>
                             ))}
                           </div>
-                          <div
-                            className={`mt-2 text-xs ${
-                              isDark ? "text-gray-400" : "text-gray-600"
-                            }`}
-                          >
-                            Tip: To convert binary to decimal, add the position
-                            values where the bit is 1
+                        </div>
+                      </div>
+
+                      {/* Conversion Methods Tutorial */}
+                      <div
+                        className={`mt-4 space-y-3 text-xs sm:text-sm ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        <div className="font-semibold text-base mb-2">
+                          Two Methods for Decimal to Binary Conversion:
+                        </div>
+
+                        {/* Subtraction Method */}
+                        <div
+                          className={`p-3 rounded-lg ${
+                            isDark
+                              ? "bg-blue-900/20 border border-blue-700/50"
+                              : "bg-blue-50 border border-blue-200"
+                          }`}
+                        >
+                          <div className="font-semibold mb-1 flex items-center gap-2">
+                            <span
+                              className={
+                                isDark ? "text-blue-400" : "text-blue-600"
+                              }
+                            >
+                              1️⃣ Subtraction Method (Place Value)
+                            </span>
                           </div>
+                          <div className="space-y-1">
+                            <p>• Start with your decimal number (e.g., 200)</p>
+                            <p>
+                              • Check if it's ≥ 128 (2^7). If YES: bit=1,
+                              subtract. If NO: bit=0
+                            </p>
+                            <p>• Continue with 64, 32, 16, 8, 4, 2, 1</p>
+                            <p>
+                              • Result: 200 = 128 + 64 + 8 ={" "}
+                              <span className="font-mono font-bold">
+                                11001000
+                              </span>
+                            </p>
+                            <p
+                              className={`text-xs italic mt-1 ${
+                                isDark ? "text-blue-300" : "text-blue-700"
+                              }`}
+                            >
+                              ✓ Best for understanding which powers of 2 make up
+                              the number
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Division Method */}
+                        <div
+                          className={`p-3 rounded-lg ${
+                            isDark
+                              ? "bg-green-900/20 border border-green-700/50"
+                              : "bg-green-50 border border-green-200"
+                          }`}
+                        >
+                          <div className="font-semibold mb-1 flex items-center gap-2">
+                            <span
+                              className={
+                                isDark ? "text-green-400" : "text-green-600"
+                              }
+                            >
+                              2️⃣ Division Method (Repeated Division)
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            <p>
+                              • Divide your number by 2, record the remainder
+                            </p>
+                            <p>• Keep dividing the quotient by 2</p>
+                            <p>• Stop when quotient reaches 0</p>
+                            <p>
+                              • Read remainders from bottom to top:{" "}
+                              <span className="font-mono font-bold">
+                                11001000
+                              </span>
+                            </p>
+                            <p
+                              className={`text-xs italic mt-1 ${
+                                isDark ? "text-green-300" : "text-green-700"
+                              }`}
+                            >
+                              ✓ Best for algorithmic/programmatic conversion
+                            </p>
+                          </div>
+                        </div>
+
+                        <div
+                          className={`text-xs italic text-center pt-2 ${
+                            isDark ? "text-gray-400" : "text-gray-600"
+                          }`}
+                        >
+                          💡 Both methods give the same result! Choose the one
+                          that makes more sense to you.
                         </div>
                       </div>
                     </div>
@@ -618,6 +777,79 @@ export const NumberSystemConverter: React.FC<NumberSystemConverterProps> = ({
                             ))}
                           </div>
                         </div>
+
+                        {/* Method Selector - Only show for decimal input */}
+                        {inputSystem === "decimal" && (
+                          <div>
+                            <label
+                              className={`block text-xs sm:text-sm font-medium mb-2 ${
+                                isDark ? "text-gray-300" : "text-gray-700"
+                              }`}
+                            >
+                              Choose Conversion Method
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                              <button
+                                onClick={() =>
+                                  setConversionMethod("subtraction")
+                                }
+                                className={`px-4 py-3 rounded-lg font-medium text-sm transition-all border-2 ${
+                                  conversionMethod === "subtraction"
+                                    ? `${
+                                        isDark
+                                          ? theme.primary
+                                          : theme.primaryLight
+                                      } text-white border-transparent shadow-lg`
+                                    : isDark
+                                    ? "bg-slate-800 text-gray-300 hover:bg-slate-700 border-slate-700"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
+                                }`}
+                              >
+                                <div className="font-bold">
+                                  Subtraction Method
+                                </div>
+                                <div
+                                  className={`text-xs mt-1 ${
+                                    conversionMethod === "subtraction"
+                                      ? "text-white/80"
+                                      : isDark
+                                      ? "text-gray-400"
+                                      : "text-gray-600"
+                                  }`}
+                                >
+                                  Check powers of 2
+                                </div>
+                              </button>
+                              <button
+                                onClick={() => setConversionMethod("division")}
+                                className={`px-4 py-3 rounded-lg font-medium text-sm transition-all border-2 ${
+                                  conversionMethod === "division"
+                                    ? `${
+                                        isDark
+                                          ? theme.primary
+                                          : theme.primaryLight
+                                      } text-white border-transparent shadow-lg`
+                                    : isDark
+                                    ? "bg-slate-800 text-gray-300 hover:bg-slate-700 border-slate-700"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
+                                }`}
+                              >
+                                <div className="font-bold">Division Method</div>
+                                <div
+                                  className={`text-xs mt-1 ${
+                                    conversionMethod === "division"
+                                      ? "text-white/80"
+                                      : isDark
+                                      ? "text-gray-400"
+                                      : "text-gray-600"
+                                  }`}
+                                >
+                                  Divide by 2 repeatedly
+                                </div>
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Show Steps Toggle */}
                         <button
